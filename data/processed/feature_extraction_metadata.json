@@ -1,0 +1,17 @@
+{
+  "SensorDataFile.csv": {
+    "windows": 885,
+    "features": 97,
+    "output": "D:\\3d_printer_predictive_maintanance\\data\\processed\\sensor_data_features.csv"
+  },
+  "benchydefect.csv": {
+    "windows": 566,
+    "features": 97,
+    "output": "D:\\3d_printer_predictive_maintanance\\data\\processed\\benchydefect_features.csv"
+  },
+  "normalbenchy.csv": {
+    "windows": 888,
+    "features": 97,
+    "output": "D:\\3d_printer_predictive_maintanance\\data\\processed\\normalbenchy_features.csv"
+  }
+}

@@ -1,0 +1,118 @@
+# =========================
+# Environment / Secrets
+# =========================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/
+ENV/
+
+# =========================
+# Jupyter
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# Node / Frontend
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build output
+dist/
+build/
+.next/
+.nuxt/
+.vite/
+.cache/
+.parcel-cache/
+
+# =========================
+# Frontend environment
+# =========================
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# =========================
+# OS / Editor
+# =========================
+.DS_Store
+Thumbs.db
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+
+# =========================
+# Temporary files
+# =========================
+*.tmp
+*.temp
+*.bak
+*.swp
+
+# =========================
+# Python generated reports
+# =========================
+*_report.json
+*_results.json
+
+# =========================
+# ML / Data generated files
+# =========================
+*.pkl
+*.pickle
+*.joblib
+*.h5
+*.hdf5
+*.onnx
+*.pt
+*.pth
+*.ckpt
+
+# =========================
+# Large datasets
+# =========================
+# Uncomment these ONLY if datasets should NOT be committed:
+# data/
+# dataset/
+
+# Common large data formats
+*.parquet
+*.feather
+*.hdf5
+*.npy
+*.npz
+
+# =========================
+# Generated frontend files
+# =========================
+frontend_files/
