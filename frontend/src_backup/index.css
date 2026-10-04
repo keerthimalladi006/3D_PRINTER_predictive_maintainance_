@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 300 700;
+    font-display: swap;
+    src: url(https://rsms.me/inter/font-files/InterVariable.woff2) format('woff2');
+  }
+}
+
+/* ─── Dark theme (default) ─────────────────────────────────────────────── */
+:root,
+[data-theme='dark'] {
+  --c-surface: 13 16 20;
+  --c-surface-raised: 20 24 30;
+  --c-surface-overlay: 28 33 42;
+  --c-surface-inset: 8 10 14;
+
+  --c-edge: 40 45 56;
+  --c-edge-soft: 28 33 42;
+  --c-edge-strong: 58 64 80;
+
+  --c-text-primary: 216 221 228;
+  --c-text-secondary: 152 160 172;
+  --c-text-muted: 104 112 126;
+  --c-text-faint: 72 78 90;
+
+  --c-brand: 71 125 176;
+  --c-brand-soft: 71 125 176;
+  --c-brand-dim: 44 78 112;
+
+  --c-ok: 45 212 191;
+  --c-ok-soft: 45 212 191;
+  --c-ok-dim: 26 130 120;
+
+  --c-warn: 245 158 11;
+  --c-warn-soft: 245 158 11;
+  --c-warn-dim: 180 116 10;
+
+  --c-alert: 239 68 68;
+  --c-alert-soft: 239 68 68;
+  --c-alert-dim: 185 53 53;
+
+  --c-grid-line: 28 33 42;
+  --c-axis-line: 40 45 56;
+  --c-chart-text: 104 112 126;
+
+  color-scheme: dark;
+}
+
+/* ─── Light theme ──────────────────────────────────────────────────────── */
+[data-theme='light'] {
+  --c-surface: 250 250 251;
+  --c-surface-raised: 255 255 255;
+  --c-surface-overlay: 243 244 246;
+  --c-surface-inset: 238 239 242;
+
+  --c-edge: 218 221 228;
+  --c-edge-soft: 232 234 240;
+  --c-edge-strong: 190 195 205;
+
+  --c-text-primary: 24 28 35;
+  --c-text-secondary: 70 76 88;
+  --c-text-muted: 120 126 138;
+  --c-text-faint: 165 170 180;
+
+  --c-brand: 43 90 138;
+  --c-brand-soft: 43 90 138;
+  --c-brand-dim: 86 130 170;
+
+  --c-ok: 14 150 130;
+  --c-ok-soft: 14 150 130;
+  --c-ok-dim: 110 180 165;
+
+  --c-warn: 180 120 8;
+  --c-warn-soft: 180 120 8;
+  --c-warn-dim: 200 155 40;
+
+  --c-alert: 200 40 40;
+  --c-alert-soft: 200 40 40;
+  --c-alert-dim: 210 90 90;
+
+  --c-grid-line: 232 234 240;
+  --c-axis-line: 218 221 228;
+  --c-chart-text: 120 126 138;
+
+  color-scheme: light;
+}
+
+@layer base {
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    background: rgb(var(--c-surface));
+    color: rgb(var(--c-text-primary));
+    font-family: 'Inter', system-ui, sans-serif;
+    font-feature-settings: 'tnum' 1, 'cv11' 1;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+}
+
+@layer utilities {
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: rgb(var(--c-surface-inset));
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--c-edge));
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--c-edge-strong));
+}
