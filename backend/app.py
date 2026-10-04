@@ -3,7 +3,8 @@ Backend API for 3D Printer Predictive Maintenance
 Flask application with RESTful endpoints.
 """
 
-from flask import Flask, jsonify, request
+import os
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 import sys
 from pathlib import Path
@@ -15,7 +16,9 @@ sys.path.insert(0, str(backend_path))
 from services.data_service import data_service
 from services.ml_service import ml_service
 
-app = Flask(__name__)
+FRONTEND_DIST = backend_path.parent / "frontend" / "dist"
+
+app = Flask(__name__, static_folder=str(FRONTEND_DIST) if FRONTEND_DIST.exists() else None)
 CORS(app)  # Enable CORS for frontend access
 
 
@@ -227,6 +230,25 @@ def predict_latest():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_frontend(path):
+    """Serve SPA static frontend or return API index."""
+    if path.startswith('api/'):
+        return jsonify({"error": "Endpoint not found"}), 404
+        
+    if path != "" and FRONTEND_DIST.exists() and (FRONTEND_DIST / path).exists():
+        return send_from_directory(FRONTEND_DIST, path)
+    elif FRONTEND_DIST.exists() and (FRONTEND_DIST / "index.html").exists():
+        return send_from_directory(FRONTEND_DIST, "index.html")
+    else:
+        return jsonify({
+            "service": "3D Printer Predictive Maintenance API",
+            "status": "running",
+            "note": "Frontend dist not found. Build frontend to serve UI at root."
+        })
+
+
 @app.errorhandler(404)
 def not_found(error):
     """Handle 404 errors."""
@@ -240,7 +262,8 @@ def internal_error(error):
 
 
 if __name__ == '__main__':
-    print("Starting 3D Printer Predictive Maintenance API...")
+    port = int(os.environ.get('PORT', 5000))
+    print(f"Starting 3D Printer Predictive Maintenance API on port {port}...")
     print("Available endpoints:")
     print("  GET /api/ping - API health check")
     print("  GET /api/machine-status - Machine status (health + electrical)")
@@ -253,4 +276,5 @@ if __name__ == '__main__':
     print("  POST /api/predict/batch - ML prediction for multiple feature sets")
     print("  GET /api/predict/latest - ML prediction for latest window")
     print()
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=True)
+

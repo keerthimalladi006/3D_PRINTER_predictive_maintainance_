@@ -11,8 +11,9 @@ import json
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from imblearn.over_sampling import SMOTE
 
-PROCESSED_PATH = Path(r"D:\3d_printer_predictive_maintanance\data\processed")
-MODEL_PATH = Path(r"D:\3d_printer_predictive_maintanance\backend\models")
+BASE_DIR = Path(__file__).resolve().parents[2]
+PROCESSED_PATH = BASE_DIR / "data" / "processed"
+MODEL_PATH = Path(__file__).resolve().parents[1] / "models"
 MODEL_PATH.mkdir(parents=True, exist_ok=True)
 
 

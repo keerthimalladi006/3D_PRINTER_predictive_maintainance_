@@ -10,7 +10,8 @@ from pathlib import Path
 from typing import List, Dict, Optional
 import json
 
-PROCESSED_PATH = Path(r"D:\3d_printer_predictive_maintanance\data\processed")
+BASE_DIR = Path(__file__).resolve().parents[2]
+PROCESSED_PATH = BASE_DIR / "data" / "processed"
 
 
 class DataService:

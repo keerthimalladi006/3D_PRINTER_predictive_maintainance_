@@ -1,0 +1,28 @@
+# Ignore git directory
+.git
+.gitignore
+
+# Ignore node modules and build artifacts
+frontend/node_modules
+frontend/dist
+frontend/.env*
+
+# Ignore python cache and virtual environments
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+venv
+.venv
+env
+
+# Ignore OS & IDE files
+.DS_Store
+Thumbs.db
+.vscode
+.idea
+
+# Ignore heavy unneeded raw dataset files if using processed data
+dataset/*.csv
+!data/processed/
