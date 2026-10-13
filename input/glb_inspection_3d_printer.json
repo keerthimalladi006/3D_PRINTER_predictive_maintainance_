@@ -1,0 +1,255 @@
+{
+  "asset": {
+    "generator": "Khronos glTF Blender I/O v5.2.40",
+    "version": "2.0"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Scene",
+      "nodes": [
+        4
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "mesh": 0,
+      "name": "Accelerometer",
+      "translation": [
+        0,
+        9900,
+        -21500
+      ]
+    },
+    {
+      "mesh": 1,
+      "name": "digital_twin_1",
+      "rotation": [
+        -0.5,
+        -0.5,
+        0.5,
+        0.5
+      ],
+      "scale": [
+        100,
+        100,
+        100
+      ],
+      "translation": [
+        11200,
+        0,
+        14100
+      ]
+    },
+    {
+      "mesh": 0,
+      "name": "HumiditySensor",
+      "translation": [
+        0,
+        11500,
+        4700
+      ]
+    },
+    {
+      "mesh": 0,
+      "name": "Temperaturesensor",
+      "translation": [
+        -9400,
+        -8800,
+        -26100
+      ]
+    },
+    {
+      "children": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "name": "digital_twin",
+      "rotation": [
+        0.7071068286895752,
+        0,
+        0,
+        0.7071068286895752
+      ],
+      "scale": [
+        0.009999999776482582,
+        0.009999999776482582,
+        0.009999999776482582
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "Lit",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.5,
+          0.5,
+          0.5,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.5527864098548889
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Scene.001",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2,
+            "TEXCOORD_1": 3
+          },
+          "indices": 4,
+          "material": 0
+        }
+      ]
+    },
+    {
+      "name": "Scene",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 5,
+            "NORMAL": 6
+          },
+          "indices": 7,
+          "material": 0
+        }
+      ]
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 24,
+      "max": [
+        50,
+        50,
+        50
+      ],
+      "min": [
+        -50,
+        -50,
+        -50
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 24,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 24,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5126,
+      "count": 24,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 4,
+      "componentType": 5123,
+      "count": 36,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 5,
+      "componentType": 5126,
+      "count": 159155,
+      "max": [
+        260.49981689453125,
+        490,
+        183
+      ],
+      "min": [
+        -172.4998779296875,
+        -1.5,
+        -182.999755859375
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 6,
+      "componentType": 5126,
+      "count": 159155,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 7,
+      "componentType": 5125,
+      "count": 319908,
+      "type": "SCALAR"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 288,
+      "byteOffset": 0,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 288,
+      "byteOffset": 288,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 192,
+      "byteOffset": 576,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 192,
+      "byteOffset": 768,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 72,
+      "byteOffset": 960,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1909860,
+      "byteOffset": 1032,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1909860,
+      "byteOffset": 1910892,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1279632,
+      "byteOffset": 3820752,
+      "target": 34963
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 5100384
+    }
+  ]
+}

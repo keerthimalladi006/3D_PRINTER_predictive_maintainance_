@@ -1,0 +1,169 @@
+{
+  "generated_at": "2026-10-12T08:05:52.172265",
+  "source_project": "3D Printer Predictive Maintenance",
+  "note": "Data exported from existing processed CSV files. No live sensor data required.",
+  "files": [
+    {
+      "filename": "unity_sensor_playback.csv",
+      "description": "Window-level sensor data with health, anomaly, and maintenance recommendations",
+      "source_file": "data/processed/sensor_data_with_health_anomaly.csv",
+      "processing_script": "health_anomaly_pipeline.py",
+      "row_count": 885,
+      "columns": [
+        {
+          "name": "timestamp",
+          "type": "string",
+          "description": "Window timestamp (YYYY-MM-DD HH:MM:SS format)",
+          "unit": "datetime"
+        },
+        {
+          "name": "vibration_rms",
+          "type": "float",
+          "description": "Combined acceleration RMS (magnitude of 3-axis acceleration)",
+          "unit": "m/s^2",
+          "note": "Derived from Ax, Ay, Az acceleration data"
+        },
+        {
+          "name": "health_score",
+          "type": "float",
+          "description": "Health indicator (0-100%, higher is healthier)",
+          "unit": "percent",
+          "calculation": "Based on deviation from normal baseline"
+        },
+        {
+          "name": "machine_status",
+          "type": "string",
+          "description": "Condition state derived from health score",
+          "values": [
+            "NORMAL",
+            "WARNING",
+            "ABNORMAL"
+          ],
+          "thresholds": "NORMAL >= 80%, WARNING 50-80%, ABNORMAL < 50%"
+        },
+        {
+          "name": "anomaly_detected",
+          "type": "integer",
+          "description": "Isolation Forest anomaly flag (0 = normal, 1 = anomaly)",
+          "values": [
+            0,
+            1
+          ],
+          "method": "Isolation Forest (contamination=0.05)"
+        },
+        {
+          "name": "anomaly_score",
+          "type": "float",
+          "description": "Isolation Forest anomaly score (higher = more anomalous)",
+          "unit": "score",
+          "method": "Isolation Forest score_samples (negated to positive)"
+        },
+        {
+          "name": "maintenance_recommendation",
+          "type": "string",
+          "description": "Rule-based maintenance action",
+          "values": [
+            "NO_ACTION",
+            "MONITOR",
+            "INSPECT"
+          ]
+        },
+        {
+          "name": "maintenance_priority",
+          "type": "string",
+          "description": "Priority level for maintenance action",
+          "values": [
+            "LOW",
+            "MEDIUM",
+            "HIGH"
+          ]
+        }
+      ],
+      "missing_value_handling": "Empty string for NaN values",
+      "data_gaps": [
+        "Temperature data: NOT AVAILABLE in original dataset",
+        "Humidity data: NOT AVAILABLE in original dataset",
+        "Data is window-level aggregated, not raw sensor readings"
+      ]
+    },
+    {
+      "filename": "unity_electrical_playback.csv",
+      "description": "Electrical power measurements with printing stage labels",
+      "source_file": "data/processed/electrical_context.csv",
+      "processing_script": "electrical_analysis.py",
+      "row_count": 10861,
+      "columns": [
+        {
+          "name": "timestamp",
+          "type": "string",
+          "description": "Timestamp (YYYY-MM-DD HH:MM:SS.fff format)",
+          "unit": "datetime"
+        },
+        {
+          "name": "time_sec",
+          "type": "float",
+          "description": "Elapsed time in seconds",
+          "unit": "seconds"
+        },
+        {
+          "name": "voltage",
+          "type": "float",
+          "description": "Voltage measurement",
+          "unit": "V (volts)"
+        },
+        {
+          "name": "current",
+          "type": "float",
+          "description": "Current measurement",
+          "unit": "A (amperes)"
+        },
+        {
+          "name": "active_power",
+          "type": "float",
+          "description": "Active power consumption",
+          "unit": "W (watts)"
+        },
+        {
+          "name": "apparent_power",
+          "type": "float",
+          "description": "Apparent power",
+          "unit": "VA (volt-amperes)"
+        },
+        {
+          "name": "power_factor",
+          "type": "float",
+          "description": "Power factor (ratio of active to apparent power)",
+          "unit": "dimensionless"
+        },
+        {
+          "name": "printing_stage",
+          "type": "integer",
+          "description": "Printing stage label from dataset",
+          "values": "Integer labels (semantics defined in source dataset)"
+        }
+      ],
+      "missing_value_handling": "Empty string for NaN values",
+      "sample_rate": "250ms intervals (4 Hz)",
+      "data_gaps": [
+        "Electrical data is at higher temporal resolution than sensor windows",
+        "Cannot synchronize with sensor data - treat as separate context"
+      ]
+    }
+  ],
+  "limitations": [
+    "Sensor data is window-level aggregated features, not raw time-series",
+    "Electrical and sensor data have different timestamps and cannot be synchronized",
+    "Temperature and humidity sensors are not present in the original dataset",
+    "Maintenance recommendations are rule-based, not ML-driven",
+    "No Remaining Useful Life (RUL) predictions included",
+    "Data is from historical recordings, not live ESP32 streaming"
+  ],
+  "integration_notes": [
+    "Place CSV files in Unity Assets/StreamingAssets/ folder",
+    "Parse rows sequentially for playback",
+    "Use configurable interval for playback speed",
+    "Handle empty strings as missing values",
+    "Parse anomaly_detected as integer (0 or 1)",
+    "Parse health_score as float percentage"
+  ]
+}

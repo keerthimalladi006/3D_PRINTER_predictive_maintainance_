@@ -102,13 +102,13 @@ function transformMaintenanceRecommendation(data: any): MaintenanceRecommendatio
     subsystem: 'PRINT_HEAD' as const,
     recommendation: data.message || 'No recommendation',
     priority: priorityMap[data.priority] || 'P2',
-    verification: 'NOT_APPLICABLE' as const,
+    verification: 'PENDING' as const,
     stages: {
       detection: { status: 'COMPLETE' as const, timestamp: new Date().toISOString(), detail: 'Automated detection' },
       assessment: { status: 'COMPLETE' as const, timestamp: new Date().toISOString(), detail: 'Rule-based assessment' },
       recommendation: { status: 'COMPLETE' as const, timestamp: new Date().toISOString(), detail: 'Generated recommendation' },
       maintenance: { status: 'PENDING' as const, timestamp: null, detail: 'Pending execution' },
-      verification: { status: 'NOT_APPLICABLE' as const, timestamp: null, detail: 'Not verified' },
+      verification: { status: 'PENDING' as const, timestamp: null, detail: 'Pending verification' },
     },
   };
 }

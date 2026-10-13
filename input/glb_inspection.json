@@ -1,0 +1,90 @@
+{
+  "asset": {
+    "generator": "Khronos glTF Blender I/O v5.2.40",
+    "version": "2.0"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "mesh": 0,
+      "name": "digital twin"
+    }
+  ],
+  "meshes": [
+    {
+      "name": "digital twin.001",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1
+          },
+          "indices": 2
+        }
+      ]
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 165570,
+      "max": [
+        260.49981689453125,
+        490,
+        183
+      ],
+      "min": [
+        -172.4998779296875,
+        -1.5,
+        -182.999755859375
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 165570,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5125,
+      "count": 319908,
+      "type": "SCALAR"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 1986840,
+      "byteOffset": 0,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1986840,
+      "byteOffset": 1986840,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1279632,
+      "byteOffset": 3973680,
+      "target": 34963
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 5253312
+    }
+  ]
+}

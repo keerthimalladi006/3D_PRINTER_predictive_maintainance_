@@ -3,7 +3,7 @@ import { OverviewPage } from './pages/OverviewPage';
 import { VibrationPage } from './pages/VibrationPage';
 import { HealthPage } from './pages/HealthPage';
 import { AnomaliesPage } from './pages/AnomaliesPage';
-import { DigitalTwinPage } from './pages/DigitalTwinPage';
+import { InteractiveDigitalTwinPage } from './pages/InteractiveDigitalTwinPage';
 import { MaintenancePage } from './pages/MaintenancePage';
 import { TestPage } from './pages/TestPage';
 
@@ -15,7 +15,7 @@ function App() {
       <Route path="/vibration" element={<VibrationPage />} />
       <Route path="/health" element={<HealthPage />} />
       <Route path="/anomalies" element={<AnomaliesPage />} />
-      <Route path="/digital-twin" element={<DigitalTwinPage />} />
+      <Route path="/digital-twin" element={<InteractiveDigitalTwinPage />} />
       <Route path="/maintenance" element={<MaintenancePage />} />
       <Route path="/test" element={<TestPage />} />
       <Route path="*" element={<Navigate to="/overview" replace />} />
