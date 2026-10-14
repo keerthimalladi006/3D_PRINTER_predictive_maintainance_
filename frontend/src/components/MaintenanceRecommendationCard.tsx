@@ -41,12 +41,7 @@ function stageLabel(s: MaintenanceStage, label: string) {
       <span className="text-xs text-txt-secondary">{s.detail}</span>
       {s.timestamp && (
         <span className="font-mono text-2xs text-txt-faint">
-          {(() => {
-            const d = new Date(s.timestamp);
-            const istOffset = 5.5 * 60 * 60 * 1000; // 5.5 hours in milliseconds
-            const istTime = new Date(d.getTime() + istOffset);
-            return istTime.toLocaleTimeString('en-GB', { hour12: false });
-          })()}
+          {new Date(s.timestamp).toLocaleTimeString('en-GB', { hour12: false })}
         </span>
       )}
     </div>

@@ -104,10 +104,8 @@ export function TimeSeriesChart({
 
   const fmtTime = (t: number) => {
     const d = new Date(t);
-    // Format time in IST (UTC+5:30)
-    const istOffset = 5.5 * 60 * 60 * 1000; // 5.5 hours in milliseconds
-    const istTime = new Date(d.getTime() + istOffset);
-    return `${istTime.getHours().toString().padStart(2, '0')}:${istTime.getMinutes().toString().padStart(2, '0')}:${istTime.getSeconds().toString().padStart(2, '0')}`;
+    // Backend now sends IST timestamps, so display as-is
+    return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}`;
   };
 
   const fmtVal = (v: number) => {
