@@ -1,0 +1,13 @@
+{
+  "feature_cols": [
+    "Ax",
+    "Ay",
+    "Az",
+    "DHT_Temperature",
+    "Humidity",
+    "DS18B20_Temperature"
+  ],
+  "contamination": 0.05,
+  "n_estimators": 100,
+  "model_type": "IsolationForest"
+}

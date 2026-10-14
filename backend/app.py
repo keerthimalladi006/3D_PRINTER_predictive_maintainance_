@@ -21,6 +21,14 @@ FRONTEND_DIST = backend_path.parent / "frontend" / "dist"
 app = Flask(__name__, static_folder=str(FRONTEND_DIST) if FRONTEND_DIST.exists() else None)
 CORS(app)  # Enable CORS for frontend access
 
+# Add cache control to prevent browser caching
+@app.after_request
+def add_cache_control(response):
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
 
 @app.route('/api/ping', methods=['GET'])
 def api_ping():
@@ -92,6 +100,7 @@ def get_health():
         health_data = data_service.get_health_data(limit=limit)
         return jsonify(health_data)
     except Exception as e:
+        print(f"Error in /api/health: {e}")
         return jsonify({"error": str(e)}), 500
 
 
@@ -230,6 +239,47 @@ def predict_latest():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route('/api/sensor-data', methods=['GET'])
+def get_sensor_data():
+    """
+    Get raw 3D printer sensor data from CSV.
+
+    Query params:
+        limit: Number of rows to return (default: all)
+
+    Returns:
+        Raw sensor readings with timestamps.
+    """
+    try:
+        limit = request.args.get('limit', type=int)
+        sensor_data = data_service.get_raw_sensor_data(limit=limit)
+        return jsonify(sensor_data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/predict/anomaly', methods=['POST'])
+def predict_anomaly():
+    """
+    Predict anomaly using Isolation Forest model.
+
+    Request body:
+        JSON object with feature names and values (Ax, Ay, Az, DHT_Temperature, Humidity, DS18B20_Temperature)
+
+    Returns:
+        Anomaly prediction, condition, and anomaly score.
+    """
+    try:
+        features = request.json
+        if not features:
+            return jsonify({"error": "No features provided"}), 400
+
+        prediction = ml_service.predict_anomaly(features)
+        return jsonify(prediction)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_frontend(path):
@@ -272,8 +322,10 @@ if __name__ == '__main__':
     print("  GET /api/anomalies - Detected anomalies")
     print("  GET /api/maintenance - Maintenance recommendations")
     print("  GET /api/electrical - Electrical context")
+    print("  GET /api/sensor-data - Raw 3D printer sensor data")
     print("  POST /api/predict - ML prediction for provided features")
     print("  POST /api/predict/batch - ML prediction for multiple feature sets")
+    print("  POST /api/predict/anomaly - Isolation Forest anomaly prediction")
     print("  GET /api/predict/latest - ML prediction for latest window")
     print()
     app.run(host='0.0.0.0', port=port, debug=True)

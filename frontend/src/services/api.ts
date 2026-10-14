@@ -7,19 +7,10 @@ import type {
   SensorSample,
   VibrationFeature,
 } from '../types';
-import {
-  getDemoAnomalies,
-  getDemoHealthTimeline,
-  getDemoMachineStatus,
-  getDemoMaintenance,
-  getDemoRecentChanges,
-  getDemoVibrationData,
-  getDemoVibrationFeatures,
-} from '../data/demoData';
 
 // ─── API service layer ─────────────────────────────────────────────────────
 // Connected to real backend API at http://localhost:5000/api
-// Falls back to demo data if API fails or not configured
+// Using frozen pre-trained model for predictions
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ??
@@ -36,11 +27,6 @@ async function fetchJson<T>(path: string): Promise<T> {
   const data = await res.json();
   console.log(`Response data:`, data);
   return data as Promise<T>;
-}
-
-// Simulate network latency for realistic loading states
-function withDelay<T>(data: T, ms = 350): Promise<T> {
-  return new Promise((resolve) => setTimeout(() => resolve(data), ms));
 }
 
 // ─── Data transformation functions ─────────────────────────────────────────
@@ -63,7 +49,7 @@ function transformMachineStatus(data: any): MachineStatus {
 
 function transformHealthPoint(data: any): HealthPoint {
   return {
-    t: data.timestamp ? new Date(data.timestamp).getTime() : Date.now(),
+    t: data.Date_Time ? new Date(data.Date_Time).getTime() : (data.timestamp ? new Date(data.timestamp).getTime() : Date.now()),
     healthScore: Number(data.health_score) || 0,
     anomalyScore: Number(data.statistical_anomaly_score) || 0,
     state: (data.condition_state || 'NORMAL') as 'NORMAL' | 'WARNING' | 'ABNORMAL',
@@ -73,13 +59,13 @@ function transformHealthPoint(data: any): HealthPoint {
 function transformAnomalyEvent(data: any): AnomalyEvent {
   return {
     id: `anomaly-${data.window_index}`,
-    t: data.timestamp ? new Date(data.timestamp).getTime() : Date.now(),
+    t: data.Date_Time ? new Date(data.Date_Time).getTime() : (data.timestamp ? new Date(data.timestamp).getTime() : Date.now()),
     severity: (data.statistical_is_anomaly ? 'HIGH' : 'MEDIUM') as 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL',
     subsystem: 'PRINT_HEAD' as const,
     title: data.condition_state === 'ABNORMAL' ? 'Abnormal Condition Detected' : 'Anomaly Detected',
     description: `Health score: ${Number(data.health_score)?.toFixed(1)}%`,
-    windowStart: 0,
-    windowEnd: 0,
+    windowStart: data.window_start || 0,
+    windowEnd: data.window_end || 0,
     evidenceMetrics: [
       `Statistical score: ${Number(data.statistical_anomaly_score)?.toFixed(2)}`,
       `ISO Forest score: ${Number(data.isolation_forest_anomaly_score)?.toFixed(2)}`,
@@ -114,82 +100,85 @@ function transformMaintenanceRecommendation(data: any): MaintenanceRecommendatio
 }
 
 export async function getMachineStatus(): Promise<MachineStatus> {
-  try {
-    const data = await fetchJson<any>('/machine-status');
-    return transformMachineStatus(data);
-  } catch (error) {
-    console.warn('Failed to fetch machine status, using demo data:', error);
-    return withDelay(getDemoMachineStatus());
-  }
+  const data = await fetchJson<any>('/machine-status');
+  return transformMachineStatus(data);
 }
 
 export async function getVibrationData(
   rangeMs?: number,
   condition?: SensorSample['condition'],
 ): Promise<SensorSample[]> {
-  try {
-    const params = new URLSearchParams();
-    if (rangeMs) params.append('limit', rangeMs.toString());
-    const data = await fetchJson<{features: any[]}>('/vibration?' + params.toString());
-    
-    return data.features.map((row: any) => ({
-      t: row.timestamp ? new Date(row.timestamp).getTime() : Date.now(),
-      ax: row['Ax(m/s^2)_mean'] || 0,
-      ay: row['Ay(m/s^2)_mean'] || 0,
-      az: row['Az(m/s^2)_mean'] || 0,
-      gx: row['Gx(deg/s)_mean'] || 0,
-      gy: row['Gy(deg/s)_mean'] || 0,
-      gz: row['Gz(deg/s)_mean'] || 0,
-      condition: (row.condition_state || 'NORMAL') as 'NORMAL' | 'WARNING' | 'ABNORMAL',
-    }));
-  } catch (error) {
-    console.warn('Failed to fetch vibration data, using demo data:', error);
-    return withDelay(getDemoVibrationData(rangeMs, condition));
-  }
+  const params = new URLSearchParams();
+  if (rangeMs) params.append('limit', rangeMs.toString());
+  const data = await fetchJson<{features: any[]}>('/vibration?' + params.toString());
+
+  return data.features.map((row: any) => ({
+    t: row.Date_Time ? new Date(row.Date_Time).getTime() : (row.timestamp ? new Date(row.timestamp).getTime() : Date.now()),
+    ax: row.Ax || row['Ax(m/s^2)_mean'] || 0,
+    ay: row.Ay || row['Ay(m/s^2)_mean'] || 0,
+    az: row.Az || row['Az(m/s^2)_mean'] || 0,
+    gx: row.Gx || row['Gx(deg/s)_mean'] || 0,  // Will be 0 (no gyroscope data)
+    gy: row.Gy || row['Gy(deg/s)_mean'] || 0,  // Will be 0 (no gyroscope data)
+    gz: row.Gz || row['Gz(deg/s)_mean'] || 0,  // Will be 0 (no gyroscope data)
+    condition: (row.condition_state || 'NORMAL') as 'NORMAL' | 'WARNING' | 'ABNORMAL',
+  }));
 }
 
 export async function getVibrationFeatures(
   samples: SensorSample[],
 ): Promise<VibrationFeature[]> {
-  return withDelay(getDemoVibrationFeatures(samples), 200);
+  // Calculate features from samples
+  const features: VibrationFeature[] = [];
+  ['ax', 'ay', 'az', 'gx', 'gy', 'gz'].forEach(axis => {
+    const values = samples.map(s => s[axis as keyof SensorSample] as number);
+    if (values.length > 0) {
+      const mean = values.reduce((a, b) => a + b, 0) / values.length;
+      const variance = values.reduce((a, b) => a + (b - mean) ** 2, 0) / values.length;
+      const std = Math.sqrt(variance);
+      const peak = Math.max(...values.map(Math.abs));
+      const rms = Math.sqrt(values.reduce((a, b) => a + b ** 2, 0) / values.length);
+
+      features.push({
+        axis: axis as any,
+        rms,
+        peak,
+        stdDev: std,
+        kurtosis: 0, // Simplified
+      });
+    }
+  });
+  return features;
 }
 
 export async function getHealthTimeline(): Promise<HealthPoint[]> {
-  try {
-    const data = await fetchJson<{health_data: any[]}>('/health');
-    return data.health_data.map(transformHealthPoint);
-  } catch (error) {
-    console.warn('Failed to fetch health timeline, using demo data:', error);
-    return withDelay(getDemoHealthTimeline());
-  }
+  const data = await fetchJson<{health_data: any[]}>('/health');
+  return data.health_data.map(transformHealthPoint);
 }
 
 export async function getAnomalies(): Promise<AnomalyEvent[]> {
-  try {
-    const data = await fetchJson<{anomalies: any[]}>('/anomalies');
-    return data.anomalies.map(transformAnomalyEvent);
-  } catch (error) {
-    console.warn('Failed to fetch anomalies, using demo data:', error);
-    return withDelay(getDemoAnomalies());
-  }
+  const data = await fetchJson<{anomalies: any[]}>('/anomalies');
+  return data.anomalies.map(transformAnomalyEvent);
 }
 
 export async function getMaintenanceRecommendations(): Promise<MaintenanceRecommendation[]> {
-  try {
-    const data = await fetchJson('/maintenance');
-    return [transformMaintenanceRecommendation(data)];
-  } catch (error) {
-    console.warn('Failed to fetch maintenance recommendations, using demo data:', error);
-    return withDelay(getDemoMaintenance());
-  }
+  const data = await fetchJson('/maintenance');
+  return [transformMaintenanceRecommendation(data)];
 }
 
 export async function getRecentChanges(): Promise<RecentChange[]> {
-  try {
-    // This endpoint doesn't exist in backend yet, return demo data
-    return withDelay(getDemoRecentChanges(), 250);
-  } catch (error) {
-    console.warn('Failed to fetch recent changes, using demo data:', error);
-    return withDelay(getDemoRecentChanges(), 250);
+  // Generate from health data changes
+  const healthData = await getHealthTimeline();
+  const changes: RecentChange[] = [];
+  for (let i = 1; i < healthData.length; i++) {
+    if (healthData[i].state !== healthData[i - 1].state) {
+      changes.push({
+        id: `change-${i}`,
+        t: healthData[i].t,
+        type: 'STATE_TRANSITION',
+        direction: healthData[i].state === 'ABNORMAL' ? 'UP' : 'DOWN',
+        description: `State changed from ${healthData[i - 1].state} to ${healthData[i].state}`,
+      });
+    }
   }
+  return changes.slice(-10); // Return last 10 changes
 }

@@ -8,7 +8,8 @@ import numpy as np
 from pathlib import Path
 import pickle
 import json
-from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier, IsolationForest
+from sklearn.preprocessing import StandardScaler
 from imblearn.over_sampling import SMOTE
 
 BASE_DIR = Path(__file__).resolve().parents[2]
@@ -24,7 +25,11 @@ class MLService:
         self.model = None
         self.feature_cols = None
         self.scaler = None
+        self.iso_forest = None
+        self.iso_scaler = None
+        self.iso_feature_cols = None
         self._load_or_train_model()
+        self._load_isolation_forest()
 
     def _load_or_train_model(self):
         """Load existing model or train new one."""
@@ -150,6 +155,63 @@ class MLService:
             result = self.predict(features)
             results.append(result)
         return results
+
+    def _load_isolation_forest(self):
+        """Load Isolation Forest model for anomaly detection."""
+        iso_model_file = MODEL_PATH / "isolation_forest_model.pkl"
+        iso_scaler_file = MODEL_PATH / "isolation_forest_scaler.pkl"
+        iso_metadata_file = MODEL_PATH / "isolation_forest_metadata.json"
+
+        if iso_model_file.exists() and iso_scaler_file.exists() and iso_metadata_file.exists():
+            try:
+                with open(iso_model_file, 'rb') as f:
+                    self.iso_forest = pickle.load(f)
+                with open(iso_scaler_file, 'rb') as f:
+                    self.iso_scaler = pickle.load(f)
+                with open(iso_metadata_file, 'r') as f:
+                    metadata = json.load(f)
+                    self.iso_feature_cols = metadata['feature_cols']
+                print("Isolation Forest model loaded from disk")
+            except Exception as e:
+                print(f"Failed to load Isolation Forest: {e}")
+                self.iso_forest = None
+        else:
+            print("Isolation Forest model not found")
+
+    def predict_anomaly(self, features_dict):
+        """
+        Predict anomaly using Isolation Forest (unsupervised).
+
+        Args:
+            features_dict: Dictionary of feature names to values
+
+        Returns:
+            Dictionary with anomaly prediction and score
+        """
+        if self.iso_forest is None or self.iso_scaler is None:
+            return {"error": "Isolation Forest model not loaded"}
+
+        # Extract features in correct order
+        X = np.array([[features_dict.get(col, 0) for col in self.iso_feature_cols]])
+
+        # Scale features
+        X_scaled = self.iso_scaler.transform(X)
+
+        # Predict
+        prediction = int(self.iso_forest.predict(X_scaled)[0])
+        anomaly_score = float(-self.iso_forest.score_samples(X_scaled)[0])
+
+        # Map prediction (-1=anomaly, 1=normal)
+        is_anomaly = prediction == -1
+        condition = "ABNORMAL" if is_anomaly else "NORMAL"
+
+        return {
+            "prediction": prediction,
+            "condition": condition,
+            "is_anomaly": is_anomaly,
+            "anomaly_score": anomaly_score,
+            "model_type": "IsolationForest"
+        }
 
 
 # Singleton instance
