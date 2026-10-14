@@ -169,7 +169,12 @@ export function MaintenancePage() {
                         <p className="mt-1 text-xs text-txt-secondary">{s.detail}</p>
                         {s.timestamp && (
                           <p className="mt-1 font-mono text-2xs text-txt-faint">
-                            {new Date(s.timestamp).toLocaleTimeString('en-GB', { hour12: false })}
+                            {(() => {
+                              const d = new Date(s.timestamp);
+                              const istOffset = 5.5 * 60 * 60 * 1000; // 5.5 hours in milliseconds
+                              const istTime = new Date(d.getTime() + istOffset);
+                              return istTime.toLocaleTimeString('en-GB', { hour12: false });
+                            })()}
                           </p>
                         )}
                       </div>

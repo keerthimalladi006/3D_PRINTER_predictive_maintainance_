@@ -100,7 +100,12 @@ function SteppedTimeline({ points }: { points: HealthPoint[] }) {
         {transitions.map((t, i) => (
           <div key={i} className="flex items-center gap-2 rounded-md border border-edge-soft bg-surface-raised px-3 py-1.5">
             <span className="font-mono text-2xs text-txt-faint">
-              {new Date(t.t).toLocaleTimeString('en-GB', { hour12: false })}
+              {(() => {
+                const d = new Date(t.t);
+                const istOffset = 5.5 * 60 * 60 * 1000; // 5.5 hours in milliseconds
+                const istTime = new Date(d.getTime() + istOffset);
+                return istTime.toLocaleTimeString('en-GB', { hour12: false });
+              })()}
             </span>
             <StatusBadge state={t.from} />
             <span className="text-txt-faint">→</span>

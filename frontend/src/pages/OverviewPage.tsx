@@ -18,7 +18,10 @@ const changeTypeLabels: Record<RecentChange['type'], string> = {
 };
 
 function fmtClock(t: number): string {
-  return new Date(t).toLocaleTimeString('en-GB', { hour12: false });
+  const d = new Date(t);
+  const istOffset = 5.5 * 60 * 60 * 1000; // 5.5 hours in milliseconds
+  const istTime = new Date(d.getTime() + istOffset);
+  return istTime.toLocaleTimeString('en-GB', { hour12: false });
 }
 
 function RecentChangeRow({ change }: { change: RecentChange }) {
@@ -112,7 +115,12 @@ export function OverviewPage() {
           <div className="ml-auto flex flex-col items-end gap-1">
             <span className="text-2xs text-txt-muted">Last update</span>
             <span className="font-mono text-sm text-txt-secondary">
-              {new Date(status.lastUpdate).toLocaleString('en-GB', { hour12: false })}
+              {(() => {
+                const d = new Date(status.lastUpdate);
+                const istOffset = 5.5 * 60 * 60 * 1000; // 5.5 hours in milliseconds
+                const istTime = new Date(d.getTime() + istOffset);
+                return istTime.toLocaleString('en-GB', { hour12: false });
+              })()}
             </span>
           </div>
         </div>

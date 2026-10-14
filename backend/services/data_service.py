@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import List, Dict, Optional
 import json
 from datetime import datetime, timedelta
+from pytz import timezone
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 PROCESSED_PATH = BASE_DIR / "data" / "processed"
@@ -36,7 +37,7 @@ class DataService:
             time_col: Name of timestamp column
             
         Returns:
-            DataFrame with timestamps adjusted to end at current time
+            DataFrame with timestamps adjusted to end at current time (IST)
         """
         df = df.copy()
         
@@ -53,8 +54,9 @@ class DataService:
         last_time = original_times.iloc[-1]
         time_deltas = original_times - last_time  # These will be negative or zero
         
-        # Set the last reading to current time
-        current_end = datetime.now()
+        # Set the last reading to current time in IST (UTC+5:30)
+        ist = timezone('Asia/Kolkata')
+        current_end = datetime.now(ist)
         
         # Apply time deltas to current end time
         new_times = current_end + time_deltas

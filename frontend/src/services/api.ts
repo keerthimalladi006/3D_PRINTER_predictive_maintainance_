@@ -48,8 +48,17 @@ function transformMachineStatus(data: any): MachineStatus {
 }
 
 function transformHealthPoint(data: any): HealthPoint {
+  // Parse the timestamp - backend now sends IST, so we need to handle it properly
+  let timestamp;
+  if (data.Date_Time) {
+    timestamp = new Date(data.Date_Time).getTime();
+  } else if (data.timestamp) {
+    timestamp = new Date(data.timestamp).getTime();
+  } else {
+    timestamp = Date.now();
+  }
   return {
-    t: data.Date_Time ? new Date(data.Date_Time).getTime() : (data.timestamp ? new Date(data.timestamp).getTime() : Date.now()),
+    t: timestamp,
     healthScore: Number(data.health_score) || 0,
     anomalyScore: Number(data.statistical_anomaly_score) || 0,
     state: (data.condition_state || 'NORMAL') as 'NORMAL' | 'WARNING' | 'ABNORMAL',
@@ -57,9 +66,18 @@ function transformHealthPoint(data: any): HealthPoint {
 }
 
 function transformAnomalyEvent(data: any): AnomalyEvent {
+  // Parse the timestamp - backend now sends IST, so we need to handle it properly
+  let timestamp;
+  if (data.Date_Time) {
+    timestamp = new Date(data.Date_Time).getTime();
+  } else if (data.timestamp) {
+    timestamp = new Date(data.timestamp).getTime();
+  } else {
+    timestamp = Date.now();
+  }
   return {
     id: `anomaly-${data.window_index}`,
-    t: data.Date_Time ? new Date(data.Date_Time).getTime() : (data.timestamp ? new Date(data.timestamp).getTime() : Date.now()),
+    t: timestamp,
     severity: (data.statistical_is_anomaly ? 'HIGH' : 'MEDIUM') as 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL',
     subsystem: 'PRINT_HEAD' as const,
     title: data.condition_state === 'ABNORMAL' ? 'Abnormal Condition Detected' : 'Anomaly Detected',

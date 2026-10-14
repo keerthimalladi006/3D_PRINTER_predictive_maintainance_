@@ -98,7 +98,12 @@ export function AppLayout({ status, children }: Props & { children: React.ReactN
                     Last update
                   </span>
                   <span className="font-mono text-2xs text-txt-secondary">
-                    {new Date(status.lastUpdate).toLocaleTimeString('en-GB', { hour12: false })}
+                    {(() => {
+                      const d = new Date(status.lastUpdate);
+                      const istOffset = 5.5 * 60 * 60 * 1000; // 5.5 hours in milliseconds
+                      const istTime = new Date(d.getTime() + istOffset);
+                      return istTime.toLocaleTimeString('en-GB', { hour12: false });
+                    })()}
                   </span>
                 </div>
               </>
